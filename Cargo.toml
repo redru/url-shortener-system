@@ -1,4 +1,4 @@
 [workspace]
 resolver = "2"
 
-members = ["distributed-id-generator", "url-shortener"]
+members = ["distributed-id-generator", "tester", "url-shortener"]
