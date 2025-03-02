@@ -56,7 +56,10 @@ async fn shorten(
                     )
                     .await
                     .unwrap();
-                HttpResponse::Ok().json(ShortenResponse::new(url.short_url))
+                HttpResponse::Ok().json(ShortenResponse::new(format!(
+                    "https://redru.io/{}",
+                    url.short_url
+                )))
             }
             Err(e) => {
                 eprintln!("Error: {}", e);

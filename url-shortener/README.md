@@ -47,7 +47,7 @@ Response:
 
 ```json
 {
-  "short_url": "abc123"
+  "short_url": "https://redru.io/abc123"
 }
 ```
 
