@@ -18,8 +18,20 @@ async fn generate_id(generator: web::Data<Mutex<IdGenerator>>) -> impl Responder
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let port = std::env::var("PORT").unwrap_or_else(|_| "8080".to_string());
+    let machine_id = std::env::var("MACHINE_ID").map_or_else(
+        |_| 1,
+        |v| v.parse::<u64>().expect("MACHINE_ID must be a valid number"),
+    );
 
-    let generator = IdGenerator::new(4, 2);
+    let datacenter_id = std::env::var("DATACENTER_ID").map_or_else(
+        |_| 1,
+        |v| {
+            v.parse::<u64>()
+                .expect("DATACENTER_ID must be a valid number")
+        },
+    );
+
+    let generator = IdGenerator::new(machine_id, datacenter_id);
     let generator_data = web::Data::new(Mutex::new(generator));
 
     println!("Server starting at http://127.0.0.1:{}", port);

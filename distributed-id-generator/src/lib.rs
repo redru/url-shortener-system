@@ -21,6 +21,8 @@ pub struct IdGenerator {
     clock: Arc<Mutex<dyn Clock>>,
 }
 
+const SEQUENCE_REFRESH_SECONDS: u8 = 1;
+
 impl IdGenerator {
     pub fn new(machine_id: u64, datacenter_id: u64) -> Self {
         Self {
@@ -48,13 +50,14 @@ impl IdGenerator {
 
         let now = self.clock.lock().unwrap().now();
 
-        let sequence = if now.as_secs() > self.last_refresh.as_secs() + 1 {
-            self.last_refresh = now;
-            self.sequence_value = 0;
-            self.sequence_value
-        } else {
-            self.sequence_value
-        };
+        let sequence =
+            if now.as_secs() >= self.last_refresh.as_secs() + SEQUENCE_REFRESH_SECONDS as u64 {
+                self.last_refresh = now;
+                self.sequence_value = 0;
+                self.sequence_value
+            } else {
+                self.sequence_value
+            };
 
         self.sequence_value += 1;
 
@@ -165,7 +168,10 @@ mod tests {
         assert_eq!(second_sequence, first_sequence + 1);
 
         // Advance the clock
-        mock_clock.lock().unwrap().advance(Duration::from_secs(3));
+        mock_clock
+            .lock()
+            .unwrap()
+            .advance(Duration::from_millis(1000));
 
         let third_id = generator.generate_id();
         let (_, _, _, third_sequence) = to_parts(third_id);
