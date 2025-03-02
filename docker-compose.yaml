@@ -48,4 +48,3 @@ services:
 
 volumes:
   url_shortener_postgres_data:
-
